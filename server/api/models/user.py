@@ -19,6 +19,7 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now())
 
     prospects = relationship("Prospect", back_populates="user")
+    prospect_files = relationship("ProspectFile", back_populates="user")
     campaigns = relationship("Campaign", back_populates="user")
 
     def __repr__(self):
