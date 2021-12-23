@@ -43,6 +43,13 @@ class ProspectCrud:
         return prospect
 
     @classmethod
+    def exist_prospect(
+        cls, db: Session, user_id: int, email: str
+    ) -> bool:
+        """Check if the prospect with email exists"""
+        return db.query(Prospect).filter(Prospect.user_id == user_id and Prospect.email == email).first() is not None
+
+    @classmethod
     def validate_prospect_ids(
         cls, db: Session, user_id: int, unvalidated_prospect_ids: Set[int]
     ) -> Set[int]:
