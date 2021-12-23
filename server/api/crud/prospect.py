@@ -43,11 +43,24 @@ class ProspectCrud:
         return prospect
 
     @classmethod
-    def exist_prospect(
-        cls, db: Session, user_id: int, email: str
-    ) -> bool:
-        """Check if the prospect with email exists"""
-        return db.query(Prospect).filter(Prospect.user_id == user_id and Prospect.email == email).first() is not None
+    def import_prospect(
+        cls, db: Session, user_id: int, data: schemas.ProspectCreate, force: bool
+    ) -> Prospect:
+        """Create or update a prospect"""
+        exists = db.query(Prospect).filter(Prospect.user_id == user_id and Prospect.email == data.email).first() is not None
+        if not exists:
+            prospect = Prospect(**data, user_id = user_id)
+            db.add(prospect)
+            db.commit()
+            db.refresh(prospect)
+        elif force:
+            id = db.query(Prospect).filter(Prospect.user_id == user_id and Prospect.email == data.email).update({
+                Prospect.first_name: data.first_name,
+                Prospect.last_name: data.last_name
+            })
+            db.commit()
+            prospect = db.query(Prospect).filter(Prospect.id == id).one_or_none()
+        return prospect
 
     @classmethod
     def validate_prospect_ids(

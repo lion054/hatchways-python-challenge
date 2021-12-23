@@ -74,15 +74,11 @@ def import_prospects_from_file(
                 break
             if not data.has_headers or line_count > 0:
                 fields = line.split(',')
-                # (user_id, email) is primary key
-                email = fields[data.email_index]
-                found = ProspectCrud.exist_prospect(db, current_user.id, email)
-                if not found: # disallow duplication of prospect
-                    ProspectCrud.create_prospect(db, current_user.id, schemas.Prospect(
-                        email = email,
-                        first_name = fields[data.first_name_index],
-                        last_name = fields[data.last_name_index],
-                    ))
+                ProspectCrud.import_prospect(db, current_user.id, schemas.ProspectCreate(
+                    email = fields[data.email_index],
+                    first_name = fields[data.first_name_index],
+                    last_name = fields[data.last_name_index],
+                ), data.force)
             line_count += 1
             done = csv_file.tell()
             ProspectFileCrud.advance_importing_progress(db, file_id, done)
@@ -90,7 +86,9 @@ def import_prospects_from_file(
         csv_file.close()
     ProspectFileCrud.delete_prospect_file(db, file_id)
     db.commit()
+    # delete csv file
     os.unlink(path)
+    # delete directory if empty
     dir_path = os.path.dirname(path)
     os.rmdir(dir_path)
 
