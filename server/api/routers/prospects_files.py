@@ -131,3 +131,15 @@ async def start_importing_prospects(
         "created_at": prospectFile.created_at,
         "updated_at": prospectFile.updated_at
     }
+
+
+@router.get("/prospects_files/{file_id}/progress", response_model=schemas.ProspectFileProgressResponse)
+async def track_importing_progress(
+    file_id: int,
+    db: Session = Depends(get_db)
+):
+    prospectFile = ProspectFileCrud.get_by_id(db, file_id)
+    return {
+        "total": prospectFile.total,
+        "done": prospectFile.done
+    }
