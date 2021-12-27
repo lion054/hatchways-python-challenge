@@ -25,3 +25,7 @@ class ImportProspects(BaseModel):
     last_name_index: int
     force: Optional[bool]
     has_headers: Optional[bool]
+
+class ProspectFileProgressResponse(BaseModel):
+    total: int
+    done: int
