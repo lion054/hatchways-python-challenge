@@ -1,7 +1,5 @@
-from fastapi import File, UploadFile
-from typing import List, Set, Union
+from typing import List, Union
 from sqlalchemy.orm.session import Session
-from api import schemas
 from api.models import ProspectFile
 from api.core.constants import DEFAULT_PAGE_SIZE, DEFAULT_PAGE, MIN_PAGE, MAX_PAGE_SIZE
 
@@ -34,10 +32,10 @@ class ProspectFileCrud:
     ) -> ProspectFile:
         """Create a prospect file"""
         prospectFile = ProspectFile(
-            path=path,
-            total=size,
-            done=0,
-            user_id=user_id,
+            path = path,
+            total = size,
+            done = 0,
+            user_id = user_id,
         )
         db.add(prospectFile)
         db.commit()
