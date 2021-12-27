@@ -43,3 +43,20 @@ class ProspectFileCrud:
         db.commit()
         db.refresh(prospectFile)
         return prospectFile
+
+    @classmethod
+    def get_by_id(cls, db: Session, file_id: int) -> Union[ProspectFile, None]:
+        """Get a single prospect by id"""
+        return db.query(ProspectFile).filter(ProspectFile.id == file_id).one_or_none()
+
+    @classmethod
+    def advance_importing_progress(cls, db: Session, file_id: int, done: int) -> Union[ProspectFile, None]:
+        """Update a single prospect by id"""
+        return db.query(ProspectFile).filter(ProspectFile.id == file_id).update({
+            ProspectFile.done: done
+        })
+
+    @classmethod
+    def delete_prospect_file(cls, db: Session, file_id: int) -> Union[ProspectFile, None]:
+        """Delete a single prospect by id"""
+        return db.query(ProspectFile).filter(ProspectFile.id == file_id).delete()
