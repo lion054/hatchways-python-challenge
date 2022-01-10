@@ -15,6 +15,7 @@ parent_dir_path = os.path.dirname(os.path.realpath(__file__)) # routes
 parent_dir_path = os.path.dirname(parent_dir_path) # api
 parent_dir_path = os.path.dirname(parent_dir_path) # server
 
+MAX_PREVIEW_LINES = 20
 
 @router.post("/prospects_files", response_model=schemas.ProspectFileResponse)
 async def upload_prospect_file(
@@ -36,7 +37,7 @@ async def upload_prospect_file(
         line_count = 0
         for line in file.file:
             # 0th line is column header
-            if line_count >= 1 and line_count <= 20:
+            if line_count <= MAX_PREVIEW_LINES:
                 fields = line.split(b',')
                 record: schemas.ProspectFile = {
                     "id": line_count,
