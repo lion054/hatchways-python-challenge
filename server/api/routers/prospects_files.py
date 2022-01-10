@@ -23,9 +23,6 @@ async def upload_prospect_file(
     current_user: schemas.User = Depends(get_current_user),
 ):
     """Get a single page of prospects"""
-    # raise HTTPException(
-    #     status_code=status.HTTP_401_UNAUTHORIZED, detail=f"filename {file.filename}"
-    # )
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
