@@ -1,14 +1,12 @@
-from fastapi import APIRouter, HTTPException, status, Depends, File, Form, UploadFile, BackgroundTasks
+from fastapi import APIRouter, HTTPException, status, Depends, File, UploadFile, BackgroundTasks
 from sqlalchemy.orm.session import Session
-from api import schemas, models
+from api import schemas
 from api.dependencies.auth import get_current_user
-from api.core.constants import DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 from api.crud import ProspectCrud, ProspectFileCrud
 from api.dependencies.db import get_db
 import os
 from uuid import uuid4
 from typing import List
-from datetime import datetime
 
 router = APIRouter(prefix="/api", tags=["prospects_files"])
 parent_dir_path = os.path.dirname(os.path.realpath(__file__)) # routes
@@ -32,21 +30,17 @@ async def upload_prospect_file(
     os.makedirs(dir_path)
     file_path = f"{dir_path}/{file.filename}"
     file_size = 0
-    preview: List[schemas.ProspectFile] = []
+    preview: List[schemas.ProspectRow] = []
     with open(file_path, "wb+") as file_object:
         line_count = 0
         for line in file.file:
             # 0th line is column header
             if line_count <= MAX_PREVIEW_LINES:
                 fields = line.split(b',')
-                record: schemas.ProspectFile = {
-                    "id": line_count,
+                record: schemas.ProspectRow = {
                     "email": fields[0],
                     "first_name": fields[1],
-                    "last_name": fields[2],
-                    "user_id": current_user.id,
-                    "created_at": datetime.now(),
-                    "updated_at": datetime.now()
+                    "last_name": fields[2]
                 }
                 preview.append(record)
             line_count += 1
