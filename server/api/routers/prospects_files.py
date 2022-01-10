@@ -47,8 +47,8 @@ async def upload_prospect_file(
             file_size += len(line)
             file_object.write(line)
         file_object.close()
-    prospectFile = ProspectFileCrud.create_prospect_file(db, current_user.id, file_path, file_size)
-    return {"id": prospectFile.id, "preview": preview}
+    prospect_file = ProspectFileCrud.create_prospect_file(db, current_user.id, file_path, file_size)
+    return {"id": prospect_file.id, "preview": preview}
 
 
 def import_prospects_from_file(
@@ -95,14 +95,14 @@ async def start_importing_prospects(
     db: Session = Depends(get_db)
 ):
     """Start the importing process of uploaded CSV in background task"""
-    prospectFile = ProspectFileCrud.get_by_id(db, file_id)
-    if not prospectFile:
+    prospect_file = ProspectFileCrud.get_by_id(db, file_id)
+    if not prospect_file:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             detail=f"Prospect file with id {file_id} does not exist",
         )
 
-    if prospectFile.user_id != current_user.id:
+    if prospect_file.user_id != current_user.id:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail=f"You do not have access to that prospect file",
@@ -110,7 +110,7 @@ async def start_importing_prospects(
 
     background_tasks.add_task(
         import_prospects_from_file,
-        prospectFile.path,
+        prospect_file.path,
         data,
         file_id,
         current_user,
@@ -118,12 +118,12 @@ async def start_importing_prospects(
     )
 
     return {
-        "id": prospectFile.id,
-        "path": prospectFile.path,
-        "total": prospectFile.total,
-        "done": prospectFile.done,
-        "created_at": prospectFile.created_at,
-        "updated_at": prospectFile.updated_at
+        "id": prospect_file.id,
+        "path": prospect_file.path,
+        "total": prospect_file.total,
+        "done": prospect_file.done,
+        "created_at": prospect_file.created_at,
+        "updated_at": prospect_file.updated_at
     }
 
 
@@ -133,8 +133,8 @@ async def track_importing_progress(
     db: Session = Depends(get_db)
 ):
     """Get the progress percentage of CSV importing process"""
-    prospectFile = ProspectFileCrud.get_by_id(db, file_id)
+    prospect_file = ProspectFileCrud.get_by_id(db, file_id)
     return {
-        "total": prospectFile.total,
-        "done": prospectFile.done
+        "total": prospect_file.total,
+        "done": prospect_file.done
     }
