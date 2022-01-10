@@ -22,7 +22,7 @@ async def upload_prospect_file(
     db: Session = Depends(get_db),
     current_user: schemas.User = Depends(get_current_user),
 ):
-    """Get a single page of prospects"""
+    """Upload CSV file for importing of prospects"""
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in"
@@ -63,6 +63,7 @@ def import_prospects_from_file(
     current_user: schemas.User,
     db: Session
 ):
+    """Parse the uploaded CSV and import prospects to DB"""
     with open(path, mode="r") as csv_file:
         line_count = 0
         while True:
@@ -98,6 +99,7 @@ async def start_importing_prospects(
     current_user: schemas.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Start the importing process of uploaded CSV in background task"""
     prospectFile = ProspectFileCrud.get_by_id(db, file_id)
     if not prospectFile:
         raise HTTPException(
@@ -135,6 +137,7 @@ async def track_importing_progress(
     file_id: int,
     db: Session = Depends(get_db)
 ):
+    """Get the progress percentage of CSV importing process"""
     prospectFile = ProspectFileCrud.get_by_id(db, file_id)
     return {
         "total": prospectFile.total,
