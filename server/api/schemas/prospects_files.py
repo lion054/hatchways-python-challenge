@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import List, Optional
 
 from pydantic import BaseModel
-from api.schemas import Prospect
 
 
 class ProspectFile(BaseModel):
@@ -13,11 +12,15 @@ class ProspectFile(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+class ProspectRow(BaseModel):
+    email: str
+    first_name: str
+    last_name: str
 
 class ProspectFileResponse(BaseModel):
     """One page of prospect files"""
     id: int
-    preview: List[Prospect]
+    preview: List[ProspectRow]
 
 class ImportProspects(BaseModel):
     email_index: int
